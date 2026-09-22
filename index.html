@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Patient Intake — Dr. Meghana</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================ */
+  /* EDIT THESE TWO LINES TO CUSTOMIZE                              */
+  /* ============================================================ */
+  :root{
+    --patient-name: "Rusheel";
+    --doctor-name: "Dr. Meghana";
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  :root{
+    --paper: #FBF8F1;
+    --card: #FFFFFF;
+    --mint: #E4F1E9;
+    --mint-line: #BFDCCB;
+    --coral: #FF6B54;
+    --coral-dark: #E1533D;
+    --ink: #1E2B23;
+    --ink-soft: #4B5B51;
+    --yellow: #FFE8A3;
+  }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--mint-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--mint-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
+    color:var(--ink);
+    font-family:'Fredoka', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:32px 20px 120px;
+  }
+
+  .clip{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow: 0 1px 0 rgba(30,43,35,.04), 0 18px 40px -20px rgba(30,43,35,.25);
+    border:2px solid var(--ink);
+    padding:34px 28px;
+    position:relative;
+    margin-bottom:26px;
+  }
+
+  .clip::before{
+    content:"";
+    position:absolute;
+    top:-14px; left:50%;
+    transform:translateX(-50%);
+    width:64px; height:22px;
+    background:#D8D0BE;
+    border:2px solid var(--ink);
+    border-radius:6px;
+  }
+
+  .stamp{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    border-bottom:2px dashed var(--mint-line);
+    padding-bottom:12px;
+    margin-bottom:18px;
+  }
+
+  .clinic{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-family:'Space Mono', monospace;
+    margin:0 0 4px;
+  }
+
+  h1{
+    font-size:clamp(26px,6vw,34px);
+    line-height:1.15;
+    margin:0 0 10px;
+    font-weight:700;
+  }
+
+  h1 .cross{color:var(--coral);}
+
+  .field-label{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin:18px 0 4px;
+  }
+
+  .complaint{
+    background:var(--mint);
+    border:1.5px solid var(--mint-line);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:16px;
+    line-height:1.5;
+  }
+
+  .diagnosis{
+    font-size:19px;
+    font-weight:600;
+    margin:20px 0 22px;
+  }
+
+  .btn-row{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    flex-wrap:wrap;
+    min-height:64px;
+  }
+
+  button{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    border-radius:999px;
+    cursor:pointer;
+    border:2px solid var(--ink);
+    transition: transform .15s ease;
+  }
+
+  .yes-btn{
+    background:var(--coral);
+    color:#fff;
+    padding:14px 26px;
+    font-size:17px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .yes-btn:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--ink);}
+  .yes-btn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--ink);}
+
+  .no-btn{
+    background:#fff;
+    color:var(--ink);
+    padding:14px 22px;
+    font-size:15px;
+    position:fixed;
+    z-index:40;
+    box-shadow: 2px 2px 0 var(--ink);
+    left: var(--no-x, auto);
+    top: var(--no-y, auto);
+    transition: top .6s ease, left .6s ease, transform .15s ease;
+  }
+
+  .no-caption{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    color:var(--coral-dark);
+    margin-top:10px;
+    min-height:16px;
+  }
+
+  .hidden{display:none !important;}
+
+  .rx-card{
+    background:var(--yellow);
+    border:2px solid var(--ink);
+    border-radius:14px;
+    padding:26px 24px;
+    position:relative;
+  }
+  .rx-card::before{
+    content:"✓";
+    position:absolute;
+    top:14px; right:20px;
+    font-size:34px;
+    color:var(--coral-dark);
+    opacity:.5;
+    font-weight:700;
+  }
+
+  .chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:8px 0 20px;
+  }
+
+  .chip{
+    background:#fff;
+    border:2px solid var(--ink);
+    border-radius:999px;
+    padding:9px 18px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:500;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .chip.selected{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .chip.disabled{
+    opacity:.3;
+    cursor:not-allowed;
+    text-decoration:line-through;
+  }
+
+  .confirm-btn{
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 24px;
+    font-size:15px;
+    opacity:.35;
+    pointer-events:none;
+  }
+  .confirm-btn.ready{
+    opacity:1;
+    pointer-events:auto;
+    box-shadow:3px 3px 0 var(--coral);
+  }
+
+  .slip{
+    font-family:'Space Mono', monospace;
+    font-size:14px;
+    line-height:1.9;
+    background:#fff;
+    border:1.5px dashed var(--ink);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-top:16px;
+  }
+  .slip b{color:var(--coral-dark);}
+
+  .stars{
+    display:flex;
+    gap:6px;
+    margin:6px 0 18px;
+  }
+  .star{
+    font-size:30px;
+    cursor:pointer;
+    filter: grayscale(1) opacity(.4);
+  }
+  .star.on{
+    filter:none;
+  }
+
+  textarea{
+    width:100%;
+    min-height:90px;
+    border:2px solid var(--ink);
+    border-radius:10px;
+    padding:12px 14px;
+    font-family:'Fredoka', sans-serif;
+    font-size:15px;
+    resize:vertical;
+    background:var(--mint);
+  }
+  textarea:focus, .chip:focus-visible, button:focus-visible{
+    outline:3px solid var(--coral);
+    outline-offset:2px;
+  }
+
+  .send-btn{
+    margin-top:14px;
+    background:var(--coral);
+    color:#fff;
+    padding:12px 22px;
+    font-size:15px;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+
+  .footer-note{
+    text-align:center;
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+
+  .sign{
+    text-align:right;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:16px;
+  }
+
+  #confetti-canvas{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:50;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    button, .no-btn{transition:none;}
+  }
+
+  /* --- ECG hero --- */
+  .ecg-wrap{
+    height:64px;
+    overflow:hidden;
+    border:2px solid var(--ink);
+    border-radius:14px;
+    background:#16241C;
+    margin-bottom:22px;
+  }
+  .ecg-track{
+    display:flex;
+    width:200%;
+    height:100%;
+    animation: ecg-scroll 3.2s linear infinite;
+  }
+  .ecg-track svg{ width:50%; height:100%; display:block; }
+  @keyframes ecg-scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .ecg-track{animation:none;} }
+
+  /* --- vitals counters --- */
+  .vitals-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:6px;
+  }
+  .vital{
+    background:var(--mint);
+    border:1.5px solid var(--mint-line);
+    border-radius:10px;
+    padding:12px 10px;
+    text-align:center;
+  }
+  .vital .num{
+    font-size:24px;
+    font-weight:700;
+    color:var(--coral-dark);
+    display:block;
+    font-variant-numeric: tabular-nums;
+  }
+  .vital .lab{
+    font-family:'Space Mono', monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    margin-top:2px;
+    display:block;
+  }
+
+  /* --- closing card --- */
+  .closing{
+    text-align:center;
+  }
+  .closing .big-heart{
+    font-size:40px;
+    margin-bottom:6px;
+  }
+  .prose-note{
+    text-align:center;
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    max-width:340px;
+    margin:4px auto 0;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="wrap">
+
+  <div class="ecg-wrap">
+    <div class="ecg-track">
+      <svg viewBox="0 0 300 64" preserveAspectRatio="none"><polyline points="0,32 40,32 52,32 58,8 64,56 70,32 90,32 130,32 142,32 148,8 154,56 160,32 180,32 220,32 232,32 238,8 244,56 250,32 270,32 300,32" fill="none" stroke="#FF6B54" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 300 64" preserveAspectRatio="none"><polyline points="0,32 40,32 52,32 58,8 64,56 70,32 90,32 130,32 142,32 148,8 154,56 160,32 180,32 220,32 232,32 238,8 244,56 250,32 270,32 300,32" fill="none" stroke="#FF6B54" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+
+  <!-- CARD 0: Vitals -->
+  <section class="clip">
+    <div class="stamp">
+      <span>VITALS MONITOR</span>
+      <span>LIVE, DON'T JUDGE</span>
+    </div>
+    <p class="clinic">Reading taken right before I hit send</p>
+    <div class="vitals-grid">
+      <div class="vital"><span class="num" id="vital-hr">0</span><span class="lab">HEART RATE (BPM)</span></div>
+      <div class="vital"><span class="num" id="vital-focus">100</span><span class="lab">FOCUS AT WORK (%)</span></div>
+      <div class="vital"><span class="num" id="vital-thoughts">0</span><span class="lab">THOUGHTS OF YOU / HR</span></div>
+    </div>
+  </section>
+
+  <!-- CARD 1: The ask -->
+  <section class="clip">
+    <div class="stamp">
+      <span>PATIENT: <span id="name-1"></span></span>
+      <span id="today-date"></span>
+    </div>
+    <p class="clinic">Referred to: <span id="doctor-name-1"></span></p>
+    <h1>Chief complaint <span class="cross">+</span></h1>
+
+    <div class="field-label">SYMPTOMS REPORTED</div>
+    <div class="complaint">
+      Persistent butterflies. Occasional loss of focus during rounds. Chronic overthinking of one specific text thread. Sudden, recurring urge to ask a certain doctor to dinner. Onset: the exact moment I met you. No known cure — believed to require repeated exposure to your company.
+    </div>
+
+    <div class="field-label">SELF-DIAGNOSIS</div>
+    <div class="diagnosis">I've self-diagnosed. I need a date with you, <span id="doctor-name-2"></span>. Will you take my case, doctor?</div>
+
+    <div class="btn-row">
+      <button class="yes-btn" id="yes-btn" onclick="handleYes()">Yes, I'll take the case</button>
+      <button class="no-btn" id="no-btn" onclick="handleNo()">No</button>
+    </div>
+    <div class="no-caption" id="no-caption"></div>
+  </section>
+
+  <!-- CARD 2: schedule picker -->
+  <section class="clip hidden" id="rx-section">
+    <div class="stamp">
+      <span>APPOINTMENT BOOKING</span>
+      <span>CONFIRMED</span>
+    </div>
+    <div class="rx-card">
+      <p class="clinic">Scheduling: one (1) visit</p>
+      <h1 style="font-size:22px;">Pick your schedule, doctor.</h1>
+
+      <div class="field-label">DAY</div>
+      <div class="chip-group" id="day-group">
+        <button class="chip" data-value="Friday">Friday</button>
+        <button class="chip" data-value="Saturday">Saturday</button>
+        <button class="chip" data-value="Sunday">Sunday</button>
+      </div>
+
+      <div class="field-label">TIME OF DAY</div>
+      <div class="chip-group" id="meal-group">
+        <button class="chip" data-value="Lunch">Lunch</button>
+        <button class="chip" data-value="Evening">Evening</button>
+        <button class="chip" data-value="Dinner">Dinner</button>
+      </div>
+      <div class="footer-note" id="meal-hint" style="text-align:left; margin:-8px 0 4px;"></div>
+
+      <button class="confirm-btn" id="confirm-btn" onclick="confirmRx()">Confirm visit</button>
+
+      <div class="slip hidden" id="slip">
+        <div>Patient: <b id="slip-name"></b></div>
+        <div>Visit confirmed: <b id="slip-combo"></b></div>
+        <div>Confirmed by: <span id="slip-signee"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARD 3: closing note -->
+  <section class="clip closing hidden" id="closing-section">
+    <div class="big-heart">🩺💛</div>
+    <p class="clinic" style="text-align:center;">Case status: closed</p>
+    <h1 style="font-size:22px;">Vitals stabilizing. See you then, doctor.</h1>
+    <div class="field-label" style="text-align:center;">ONE LAST THING</div>
+    <p class="prose-note">Screenshot the confirmed visit above and send it to the patient, <span id="patient-name-closing"></span> — he needs it on file to confirm the appointment actually happened.</p>
+  </section>
+
+</div>
+
+<script>
+  const PATIENT_NAME = getComputedStyle(document.documentElement).getPropertyValue('--patient-name').trim().replace(/"/g,'');
+  const DOCTOR_NAME = getComputedStyle(document.documentElement).getPropertyValue('--doctor-name').trim().replace(/"/g,'');
+
+  document.getElementById('name-1').textContent = PATIENT_NAME;
+  document.getElementById('doctor-name-1').textContent = DOCTOR_NAME;
+  document.getElementById('doctor-name-2').textContent = DOCTOR_NAME;
+  document.getElementById('patient-name-closing').textContent = PATIENT_NAME;
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('slip-signee').textContent = DOCTOR_NAME;
+
+  // animate the vitals counters up on load
+  function countUp(id, to, duration){
+    const el = document.getElementById(id);
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now - start) / duration);
+      el.textContent = Math.round(to * p);
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  countUp('vital-hr', 142, 1400);
+  countUp('vital-thoughts', 47, 1400);
+  (function(){
+    const el = document.getElementById('vital-focus');
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now - start) / 1400);
+      el.textContent = Math.round(100 - 88 * p);
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  const noCaptions = [
+    "Is that a professional opinion?",
+    "I'd like a second opinion.",
+    "That's not what the chart says.",
+    "Careful, doctor — malpractice.",
+    "This diagnosis isn't optional.",
+    "You can run, but the prescription stands."
+  ];
+  let noClicks = 0;
+  let yesScale = 1;
+
+  // keep the No button roaming the screen on its own, nonstop, independent of clicks
+  function moveNoRandomly(){
+    const btn = document.getElementById('no-btn');
+    const btnW = btn.offsetWidth || 90;
+    const btnH = btn.offsetHeight || 48;
+    const maxX = Math.max(0, window.innerWidth - btnW - 16);
+    const maxY = Math.max(0, window.innerHeight - btnH - 16);
+    const x = 8 + Math.random() * maxX;
+    const y = 8 + Math.random() * maxY;
+    btn.style.setProperty('--no-x', x + 'px');
+    btn.style.setProperty('--no-y', y + 'px');
+  }
+  let noRoamInterval = setInterval(moveNoRandomly, 1500);
+  setTimeout(moveNoRandomly, 1000);
+
+  function handleNo(){
+    const btn = document.getElementById('no-btn');
+    const caption = document.getElementById('no-caption');
+    noClicks++;
+
+    // shrink slightly, floor it so it never disappears
+    const scale = Math.max(0.55, 1 - noClicks * 0.06);
+    btn.style.transform = `scale(${scale})`;
+
+    // grow the yes button a touch each time
+    yesScale = Math.min(1.6, yesScale + 0.05);
+    document.getElementById('yes-btn').style.transform = `scale(${yesScale})`;
+
+    // jump to a random spot on screen (works for touch, no cursor needed)
+    btn.classList.remove('still');
+    const btnW = btn.offsetWidth || 90;
+    const btnH = btn.offsetHeight || 48;
+    const maxX = Math.max(0, window.innerWidth - btnW - 16);
+    const maxY = Math.max(0, window.innerHeight - btnH - 16);
+    const x = 8 + Math.random() * maxX;
+    const y = 8 + Math.random() * maxY;
+    btn.style.setProperty('--no-x', x + 'px');
+    btn.style.setProperty('--no-y', y + 'px');
+
+    caption.textContent = noCaptions[Math.min(noClicks - 1, noCaptions.length - 1)];
+  }
+
+  function handleYes(){
+    clearInterval(noRoamInterval);
+    document.getElementById('no-btn').classList.add('hidden');
+    document.getElementById('no-caption').textContent = '';
+    launchConfetti();
+    document.getElementById('rx-section').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('rx-section').scrollIntoView({behavior:'smooth', block:'start'});
+    }, 300);
+  }
+
+  const AVAILABILITY = {
+    Friday: ['Dinner'],
+    Saturday: ['Evening', 'Dinner'],
+    Sunday: ['Lunch', 'Evening', 'Dinner']
+  };
+
+  let selectedDay = null, selectedMeal = null;
+
+  document.querySelectorAll('#day-group .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#day-group .chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedDay = chip.dataset.value;
+      applyMealAvailability();
+      checkReady();
+    });
+  });
+
+  document.querySelectorAll('#meal-group .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if(chip.classList.contains('disabled')) return;
+      document.querySelectorAll('#meal-group .chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedMeal = chip.dataset.value;
+      checkReady();
+    });
+  });
+
+  function applyMealAvailability(){
+    const allowed = AVAILABILITY[selectedDay] || [];
+    document.querySelectorAll('#meal-group .chip').forEach(chip => {
+      const ok = allowed.includes(chip.dataset.value);
+      chip.classList.toggle('disabled', !ok);
+      if(!ok && chip.classList.contains('selected')){
+        chip.classList.remove('selected');
+        selectedMeal = null;
+      }
+    });
+    const hint = document.getElementById('meal-hint');
+    hint.textContent = selectedDay ? `${selectedDay}s only work for: ${allowed.join(', ')}.` : '';
+  }
+
+  function checkReady(){
+    const btn = document.getElementById('confirm-btn');
+    btn.classList.toggle('ready', !!(selectedDay && selectedMeal));
+  }
+
+  function confirmRx(){
+    if(!selectedDay || !selectedMeal) return;
+    document.getElementById('slip-name').textContent = PATIENT_NAME;
+    document.getElementById('slip-combo').textContent = `${selectedMeal} on ${selectedDay}`;
+    document.getElementById('slip').classList.remove('hidden');
+    launchConfetti();
+    document.getElementById('closing-section').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('closing-section').scrollIntoView({behavior:'smooth', block:'start'});
+    }, 300);
+  }
+
+  // lightweight confetti, no external libraries
+  function launchConfetti(){
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const colors = ['#FF6B54','#FFE8A3','#BFDCCB','#1E2B23','#FFFFFF'];
+    const pieces = Array.from({length: 120}, () => ({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height * 0.3,
+      w: 6 + Math.random() * 6,
+      h: 8 + Math.random() * 10,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: 2 + Math.random() * 3,
+      drift: -1.5 + Math.random() * 3,
+      rot: Math.random() * Math.PI,
+      rotSpeed: -0.2 + Math.random() * 0.4
+    }));
+    let frame = 0;
+    const maxFrames = 150;
+    function tick(){
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      pieces.forEach(p => {
+        p.y += p.speed;
+        p.x += p.drift;
+        p.rot += p.rotSpeed;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      });
+      frame++;
+      if(frame < maxFrames){
+        requestAnimationFrame(tick);
+      } else {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+      }
+    }
+    tick();
+  }
+
+  window.addEventListener('resize', () => {
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+</body>
+</html>
